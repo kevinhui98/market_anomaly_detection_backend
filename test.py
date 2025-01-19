@@ -80,7 +80,7 @@ def get_predictions(stock):
       return prediction, probability
 @app.post("/predict")
 async def predict(stock:dict):
-      prediction, probability = get_predictions(stock.data.value())
+      prediction, probability = get_predictions(stock["data"])
       return {
             "prediction": prediction.tolist(),
             "probability": probability.tolist(),
