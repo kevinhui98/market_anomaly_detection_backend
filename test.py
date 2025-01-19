@@ -86,4 +86,4 @@ async def predict(data):
 
 if __name__ == "__main__":
       import uvicorn
-      uvicon.run(app,host="0.0.0.0",port=10000)
+      uvicorn.run(app,host="0.0.0.0",port=10000)
