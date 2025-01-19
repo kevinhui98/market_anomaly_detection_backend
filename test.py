@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 import pickle
 import pandas as pd
 
@@ -79,8 +79,8 @@ def get_predictions(stock):
       probability = lr_model_scaled.predict_proba(df[stock])
       return prediction, probability
 @app.post("/predict")
-async def predict(stock):
-      prediction, probability = get_predictions(stock)
+async def predict(stock:dict):
+      prediction, probability = get_predictions(stock.data.value())
       return {
             "prediction": prediction.tolist(),
             "probability": probability.tolist(),
