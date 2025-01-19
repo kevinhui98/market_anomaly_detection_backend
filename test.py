@@ -5,7 +5,7 @@ import pandas as pd
 app = FastAPI()
 
 # Load the all the models
-def load_model(self, filename):
+def load_model(filename):
         with open(filename,"rb") as file:
             return pickle.load(file)  
 
