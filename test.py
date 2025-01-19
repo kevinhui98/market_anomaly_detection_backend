@@ -17,7 +17,7 @@ rf_model_scaled = load_model("rf_model_scaled.pkl")
 svm_model_scaled = load_model("svm_model_scaled.pkl")
 lr_model_scaled = load_model("lr_model_scaled.pkl")
 
-
+df = pd.read_csv("FinancialMarketData.xlsx - EWS.csv")
 def preprocess_data(market_dict):
       input_dict = {
             'year' : [years for _, years in market_dict['Data']],
@@ -71,14 +71,16 @@ def preprocess_data(market_dict):
       return df
 
 # Function to get predictions
-def get_predictions(dict,stock):
-      preprocess_data = preprocess_data(dict)
-      prediction = lr_model_scaled.predict(preprocess_data[stock])
-      probability = lr_model_scaled.predict_proba(preprocess_data[stock])
+def get_predictions(stock):
+      # preprocess_data = preprocess_data(dict)
+      # prediction = lr_model_scaled.predict(preprocess_data[stock])
+      # probability = lr_model_scaled.predict_proba(preprocess_data[stock])
+      prediction = lr_model_scaled.predict(df[stock])
+      probability = lr_model_scaled.predict_proba(df[stock])
       return prediction, probability
 @app.post("/predict")
-async def predict(data):
-      prediction, probability = get_predictions(data)
+async def predict(stock):
+      prediction, probability = get_predictions(stock)
       return {
             "prediction": prediction.tolist(),
             "probability": probability.tolist(),
