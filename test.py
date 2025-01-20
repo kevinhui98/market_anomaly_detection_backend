@@ -2,8 +2,8 @@ from fastapi import FastAPI, Query
 import pickle
 import pandas as pd
 import numpy as np
-app = FastAPI()
 import json
+app = FastAPI()
 
 # Load the all the models
 def load_model(filename):
@@ -22,7 +22,7 @@ with open("data.json","rb") as data:
       df = pd.DataFrame(json.load(data))
 
 # df = pd.read_csv("FinancialMarketData.xlsx - EWS.csv")
-# def preprocess_data(market_dict):
+def preprocess_data(market_dict):
 #       input_dict = {
 #             'year' : [years for _, years in market_dict['Data']],
 #             'Y' :[ Y for _, Y in market_dict['Y']]  ,
@@ -69,16 +69,62 @@ with open("data.json","rb") as data:
 #             'MXEU' :[ MXEU for _, MXEU in market_dict['MXEU']]  ,
 #             'MXJP' :[ MXJP for _, MXJP in market_dict['MXJP']]
 #       }
-#       df = pd.DataFrame([input_dict])
+      input_dict = {
+            'Y' :market_dict['Y'] ,
+            'year' : market_dict['Data'],
+            'VIX' :market_dict['VIX']  ,
+            'GTITL2YR' :market_dict['GTITL2YR']  ,
+            'GTITL10YR' :market_dict['GTITL10YR']  ,
+            'GTITL30YR' :market_dict['GTITL30YR']  ,
+            'EONIA' :market_dict['EONIA']  ,
+            'GTDEM30Y' :market_dict['GTDEM30Y']  ,
+            'GTDEM10Y' :market_dict['GTDEM10Y']  ,
+            'GTJPY10YR' :market_dict['GTJPY10YR']  ,
+            'GTDEM2Y' :market_dict['GTDEM2Y']  ,
+            'GTJPY30YR' :market_dict['GTJPY30YR']  ,
+            'GTJPY2YR' :market_dict['GTJPY2YR']  ,
+            'DXY' :market_dict['DXY']  ,
+            'GTGBP20Y' :market_dict['GTGBP20Y']  ,
+            'GTGBP30Y' :market_dict['GTGBP30Y']  ,
+            'GTGBP2Y' :market_dict['GTGBP2Y']  ,
+            'USGG30YR' :market_dict['USGG30YR']  ,
+            'US0001M' :market_dict['US0001M']  ,
+            'GT10' :market_dict['GT10']  ,
+            'XAU BGNL' :market_dict['XAU BGNL']  ,
+            'USGG3M' :market_dict['USGG3M']  ,
+            'USGG2YR' :market_dict['USGG2YR']  ,
+            'MXBR' :market_dict['MXBR']  ,
+            'Cl1' :market_dict['Cl1']  ,
+            'CRY' :market_dict['CRY']  ,
+            'BDIY' :market_dict['BDIY']  ,
+            'ECSURPUS' :market_dict['ECSURPUS']  ,
+            'GBP' :market_dict['GBP']  ,
+            'LUMSTRUU' :market_dict['LUMSTRUU']  ,
+            'LMBITR' :market_dict['LMBITR']  ,
+            'MXRU' :market_dict['MXRU']  ,
+            'MXCN' :market_dict['MXCN']  ,
+            'JPY' :market_dict['JPY']  ,
+            'LUACTRUU' :market_dict['LUACTRUU']  ,
+            'LF94TRUU' :market_dict['LF94TRUU']  ,
+            'EMUSTRUU' :market_dict['EMUSTRUU']  ,
+            'MXIN' :market_dict['MXIN']  ,
+            'LF98TRUU' :market_dict['LF98TRUU']  ,
+            'MXUS' :market_dict['MXUS']  ,
+            'LG30TRUU' :market_dict['LG30TRUU']  ,
+            'LP01TREU' :market_dict['LP01TREU']  ,
+            'MXEU' :market_dict['MXEU']  ,
+            'MXJP' :market_dict['MXJP']
+      }
+      data = pd.DataFrame([input_dict])
 #       print("df")
 #       print(df)
-#       return df
+      return data
 
 # Function to get predictions
 def get_predictions(stock):
-      # preprocess_data = preprocess_data(dict)
-      # prediction = lr_model_scaled.predict(preprocess_data[stock])
-      # probability = lr_model_scaled.predict_proba(preprocess_data[stock])
+      preprocessed_data = preprocess_data(stock)
+      prediction = lr_model_scaled.predict(preprocessed_data[stock])
+      probability = lr_model_scaled.predict_proba(preprocessed_data[stock])
       # pred ={
       #       "dt": round(np.mean(dt_model.predict(df[stock]))),
       #       "lr": round(np.mean(lr_model.predict(df[stock]))),
@@ -101,17 +147,29 @@ def get_predictions(stock):
       # prediction = lr_model_scaled.predict(df[stock])
       # probability = lr_model_scaled.predict_proba(df[stock])
       # return prediction, probability
-      prediction = lr_model_scaled.predict(df[-1])
-      probability = lr_model_scaled.predict_proba(df[-1])
+      # prediction = lr_model_scaled.predict(df["Y"])
+      # probability = lr_model_scaled.predict_proba(df["Y"])
+      # print(preprocess_data(df.iloc[-1]))
       return prediction, probability
+      # return df
+
+@app.get("/")
+async def greeting():
+      return "hello"
+
 @app.post("/predict")
 async def predict(stock:dict):
-      prediction, probability = get_predictions(stock["data"])
+      prediction, probability = get_predictions(df.iloc[-1])
       return {
             "prediction": prediction.tolist(),
             "probability": probability.tolist(),
       }
+      # print(preprocess_data(df.iloc[-1]))
+      # return {
+      #       "greet": "hello"
+      # }
+      # return df.iloc[-1]
 
 if __name__ == "__main__":
       import uvicorn
-      uvicorn.run(app,host="0.0.0.0",port=10000)
+      # uvicorn.run(app,port=8000)
